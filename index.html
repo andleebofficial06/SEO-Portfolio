@@ -557,7 +557,7 @@
   <!-- EmailJS -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
-    /* EmailJS initialized inline with each send call */
+    emailjs.init("FME7dTV_16SgQ4Tsy");
   </script>
 </head>
 <body>
@@ -1581,19 +1581,19 @@
       website:    document.getElementById('website').value || 'Not provided',
       service:    document.getElementById('service').value || 'Not selected',
       message:    document.getElementById('message').value,
-      email:      'andleebasghar06@gmail.com',
     };
 
-    emailjs.send('service_qsuynvk', 'template_mq9unrl', templateParams, 'FME7dTV_16SgQ4Tsy')
+    emailjs.send('service_qsuynvk', 'template_mq9unrl', templateParams)
       .then(function(response) {
         console.log('SUCCESS!', response.status, response.text);
         successEl.style.display = 'block';
         e.target.reset();
         btn.textContent = 'Send Message →';
         btn.disabled = false;
-      }, function(error) {
-        console.error('FAILED...', JSON.stringify(error));
-        errorEl.innerHTML = '❌ Error: ' + JSON.stringify(error) + ' — Please email directly: <a href="mailto:andleebasghar06@gmail.com" style="color:var(--gold)">andleebasghar06@gmail.com</a>';
+      })
+      .catch(function(error) {
+        console.error('FAILED', error);
+        errorEl.innerHTML = '❌ Failed to send. Please email directly: <a href="mailto:andleebasghar06@gmail.com" style="color:var(--gold)">andleebasghar06@gmail.com</a>';
         errorEl.style.display = 'block';
         btn.textContent = 'Send Message →';
         btn.disabled = false;
