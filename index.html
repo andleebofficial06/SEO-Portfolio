@@ -554,6 +554,13 @@
     .book-avail { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.5); }
     .book-avail-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.2); animation: pulse 2s ease infinite; }
   </style>
+  <!-- EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("FME7dTV_16SgQ4Tsy");
+    })();
+  </script>
 </head>
 <body>
 
@@ -1410,11 +1417,11 @@
     <div class="contact-grid">
       <form class="contact-form" id="contactForm" onsubmit="submitForm(event)">
         <div class="form-row">
-          <input type="text" name="name" placeholder="Your Name" required class="form-input" />
-          <input type="email" name="email" placeholder="Your Email" required class="form-input" />
+          <input type="text" id="from_name" name="from_name" placeholder="Your Name" required class="form-input" />
+          <input type="email" id="from_email" name="from_email" placeholder="Your Email" required class="form-input" />
         </div>
-        <input type="url" name="website" placeholder="Your Website URL (optional)" class="form-input" />
-        <select name="service" class="form-input form-select">
+        <input type="url" id="website" name="website" placeholder="Your Website URL (optional)" class="form-input" />
+        <select id="service" name="service" class="form-input form-select">
           <option value="">Select Service Type</option>
           <option>Authority Builder (Starter — $400/mo)</option>
           <option>Growth Engine (Pro — $900/mo)</option>
@@ -1427,9 +1434,10 @@
           <option>E-Commerce SEO</option>
           <option>Other / Custom</option>
         </select>
-        <textarea name="message" placeholder="Tell me about your goals and current SEO challenges..." rows="5" required class="form-input form-textarea"></textarea>
-        <button type="submit" class="btn-primary form-submit">Send Message →</button>
+        <textarea id="message" name="message" placeholder="Tell me about your goals and current SEO challenges..." rows="5" required class="form-input form-textarea"></textarea>
+        <button type="submit" class="btn-primary form-submit" id="submitBtn">Send Message →</button>
         <div class="form-success" id="formSuccess" style="display:none">✅ Message sent! I'll reply within 24 hours with a free SEO opportunity overview.</div>
+        <div id="formError" style="display:none;color:#e74c3c;font-size:0.9rem;padding:14px 18px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:var(--r)">❌ Something went wrong. Please email me directly at andleebasghar06@gmail.com</div>
       </form>
       <div class="contact-info">
         <div class="ci-card">
@@ -1556,11 +1564,39 @@
     a.addEventListener('click', () => document.getElementById('nav-mobile').classList.remove('open'));
   });
 
-  // Contact form
+  // Contact form with EmailJS
   function submitForm(e) {
     e.preventDefault();
-    document.getElementById('formSuccess').style.display = 'block';
-    e.target.reset();
+
+    const btn = document.getElementById('submitBtn');
+    const successEl = document.getElementById('formSuccess');
+    const errorEl = document.getElementById('formError');
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
+
+    const templateParams = {
+      from_name:  document.getElementById('from_name').value,
+      from_email: document.getElementById('from_email').value,
+      website:    document.getElementById('website').value || 'Not provided',
+      service:    document.getElementById('service').value || 'Not selected',
+      message:    document.getElementById('message').value,
+    };
+
+    emailjs.send('service_qsuynvk', 'template_mq9unrl', templateParams)
+      .then(function() {
+        successEl.style.display = 'block';
+        e.target.reset();
+        btn.textContent = 'Send Message →';
+        btn.disabled = false;
+      }, function(error) {
+        console.error('EmailJS error:', error);
+        errorEl.style.display = 'block';
+        btn.textContent = 'Send Message →';
+        btn.disabled = false;
+      });
   }
 
   // Audit widget
